@@ -7,8 +7,11 @@ import javax.inject.Inject;
 import com.johnvictorfs.rebalancedcombatlevels.helpers.CombatLevelsHelper;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.NPCManager;
@@ -33,6 +36,64 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
 
     @Inject
     NPCManager npcManager;
+
+    private int playerCombatLevel() {
+        if (config.changePlayerCombatLevel()) {
+            int usedStylesCount = 0;
+            int totalLevelsSum = 0;
+
+            if (client.getRealSkillLevel(Skill.ATTACK) > 1 || !config.excludeZeroStats()) {
+                usedStylesCount++;
+                totalLevelsSum += client.getRealSkillLevel(Skill.ATTACK);
+            }
+
+            if (client.getRealSkillLevel(Skill.DEFENCE) > 1 || !config.excludeZeroStats()) {
+                usedStylesCount++;
+                totalLevelsSum += client.getRealSkillLevel(Skill.DEFENCE);
+            }
+
+            if (client.getRealSkillLevel(Skill.MAGIC) > 1 || !config.excludeZeroStats()) {
+                usedStylesCount++;
+                totalLevelsSum += client.getRealSkillLevel(Skill.MAGIC);
+            }
+
+            if (client.getRealSkillLevel(Skill.RANGED) > 1 || !config.excludeZeroStats()) {
+                usedStylesCount++;
+                totalLevelsSum += client.getRealSkillLevel(Skill.RANGED);
+            }
+
+            if (client.getRealSkillLevel(Skill.STRENGTH) > 1 || !config.excludeZeroStats()) {
+                usedStylesCount++;
+                totalLevelsSum += client.getRealSkillLevel(Skill.STRENGTH);
+            }
+
+            if (usedStylesCount == 0 && config.excludeZeroStats()) {
+                return -1;
+            }
+
+            return totalLevelsSum / (config.excludeZeroStats() ? usedStylesCount : 5);
+        } else {
+            Player player = client.getLocalPlayer();
+
+            if (player == null) return -1;
+
+            return player.getCombatLevel();
+        }
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick event) {
+        if (client.getGameState() != GameState.LOGGED_IN) {
+            return;
+        }
+
+        Widget combatLevelWidget = client.getWidget(WidgetInfo.COMBAT_LEVEL);
+        if (combatLevelWidget == null || !config.changePlayerCombatLevel()) {
+            return;
+        }
+
+        combatLevelWidget.setText("Combat Lvl: " + playerCombatLevel());
+    }
 
     @Subscribe
     public void onMenuOpened(MenuOpened event) {
@@ -65,7 +126,9 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
 
                 if (config.showRegularCombatLevel()) {
                     // Show both new and old combat levels
-                    entry.setTarget(entry.getTarget() + CombatLevelsHelper.coloredFromCombatLevel(newCombatLevel, " (" + newLevelString + ")", client));
+                    String newTarget = entry.getTarget() + "  " + CombatLevelsHelper.coloredFromCombatLevel(newCombatLevel, "(" + newLevelString + ")", playerCombatLevel());
+                    System.out.println(newTarget);
+                    entry.setTarget(newTarget);
                 } else {
                     // Show only new combat levels
                     entry.setTarget(entry.getTarget().replaceAll(oldLevelString, newLevelString));
