@@ -7,11 +7,11 @@ import javax.inject.Inject;
 import com.johnvictorfs.rebalancedcombatlevels.helpers.CombatLevelsHelper;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.NPCManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
@@ -31,20 +31,16 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
     @Inject
     private KindaRebalancedCombatLevelsConfig config;
 
-    @Override
-    protected void startUp() throws Exception {
-        log.info("Rebalanced combat levels started!");
-    }
-
-    @Override
-    protected void shutDown() throws Exception {
-        log.info("Rebalanced combat levels stopped!");
-    }
+    @Inject
+    NPCManager npcManager;
 
     @Subscribe
     public void onMenuOpened(MenuOpened event) {
-        MenuEntry[] entries = event.getMenuEntries();
         MenuEntry firstEntry = event.getFirstEntry();
+        if (firstEntry == null) return;
+
+        MenuEntry[] entries = event.getMenuEntries();
+
         Matcher matcher = NPC_NAME_PATTERN.matcher(firstEntry.getTarget());
 
         if (matcher.matches()) {
