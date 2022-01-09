@@ -2,6 +2,7 @@ package com.johnvictorfs.rebalancedcombatlevels.helpers;
 
 import com.google.gson.Gson;
 import jdk.nashorn.internal.parser.JSONParser;
+import net.runelite.api.Client;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -67,6 +68,18 @@ public class CombatLevelsHelper {
             Reader reader = new InputStreamReader(Objects.requireNonNull(CombatLevelsHelper.class.getResourceAsStream("monsters-complete.json")), StandardCharsets.UTF_8);
 
             monsters = gson.fromJson(reader, OsrsBoxDBMonster[].class);
+        }
+    }
+
+    private static String coloredFromCombatLevel(int combatLevel, String text, Client client) {
+        try {
+            int playerLevel = Objects.requireNonNull(client.getLocalPlayer()).getCombatLevel();
+
+            if (combatLevel == playerLevel) {
+                return "#ffff00";
+            } else if (combatLevel )
+        } catch(Exception exception) {
+            return text;
         }
     }
 }
