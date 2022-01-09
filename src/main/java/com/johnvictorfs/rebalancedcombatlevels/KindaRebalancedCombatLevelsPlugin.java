@@ -98,6 +98,7 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
     @Subscribe
     public void onMenuOpened(MenuOpened event) {
         MenuEntry firstEntry = event.getFirstEntry();
+
         if (firstEntry == null) return;
 
         MenuEntry[] entries = event.getMenuEntries();
@@ -127,7 +128,6 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
                 if (config.showRegularCombatLevel()) {
                     // Show both new and old combat levels
                     String newTarget = entry.getTarget() + "  " + CombatLevelsHelper.coloredFromCombatLevel(newCombatLevel, "(" + newLevelString + ")", playerCombatLevel());
-                    System.out.println(newTarget);
                     entry.setTarget(newTarget);
                 } else {
                     // Show only new combat levels
