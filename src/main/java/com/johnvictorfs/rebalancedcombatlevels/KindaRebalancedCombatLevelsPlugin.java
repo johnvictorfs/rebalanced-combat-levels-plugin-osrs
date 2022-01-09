@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 
 import javax.inject.Inject;
 
+import com.johnvictorfs.rebalancedcombatlevels.helpers.CombatLevelsHelper;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.GameStateChanged;
@@ -43,13 +44,34 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
     @Subscribe
     public void onMenuOpened(MenuOpened event) {
         MenuEntry[] entries = event.getMenuEntries();
+        MenuEntry firstEntry = event.getFirstEntry();
+        Matcher matcher = NPC_NAME_PATTERN.matcher(firstEntry.getTarget());
 
-        for (MenuEntry entry : entries) {
-            Matcher matcher = NPC_NAME_PATTERN.matcher(entry.getTarget());
+        if (matcher.matches()) {
+            String npcName = matcher.group(1);
+            String oldCombatLevel = matcher.group(2);
+            String oldLevelString = "level-" + oldCombatLevel;
 
-            if (matcher.matches()) {
-                String npcName = matcher.group(1);
-                String oldCombatLevel = matcher.group(2);
+            for (MenuEntry entry : entries) {
+                if (!entry.getTarget().contains(oldLevelString)) continue;
+
+                int newCombatLevel = CombatLevelsHelper.combatLevelFromNPC(npcName, Integer.parseInt(oldCombatLevel));
+
+                if (newCombatLevel == -1) {
+                    System.out.println("Could not find combat level for " + npcName + "(" + oldCombatLevel + ")");
+                    // Could not find data to calculate new combat level, do nothing
+                    return;
+                }
+
+                String newLevelString = "new-level-" + newCombatLevel;
+
+                if (config.showRegularCombatLevel()) {
+                    // Show both new and old combat levels
+                    entry.setTarget(entry.getTarget() + " (" + newLevelString + ")");
+                } else {
+                    // Show only new combat levels
+                    entry.setTarget(entry.getTarget().replaceAll(oldLevelString, newLevelString));
+                }
             }
         }
     }

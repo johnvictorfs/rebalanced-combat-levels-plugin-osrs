@@ -15,13 +15,4 @@ public interface KindaRebalancedCombatLevelsConfig extends Config
 	default boolean showRegularCombatLevel() {
 		return true;
 	}
-
-	@ConfigItem(
-			keyName = "showNewCombatLevels",
-			name = "Show New (re-calculated) Combat Level",
-			description = "Configures whether the new recalculated Combat Levels (from used NPC magic/melee/def/ranged levels) of NPCs should appear"
-	)
-	default boolean showNewCombatLevels() {
-		return true;
-	}
 }
