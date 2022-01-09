@@ -15,4 +15,13 @@ public interface KindaRebalancedCombatLevelsConfig extends Config
 	default boolean showRegularCombatLevel() {
 		return true;
 	}
+
+	@ConfigItem(
+			keyName = "recalculatedCombatLevelText",
+			name = "Text of recalculated combat level",
+			description = "This sets the text that will appear together with the new combat level. Example \"(some-text-44)\""
+	)
+	default String recalculatedCombatLevelText() {
+		return "*level-";
+	}
 }

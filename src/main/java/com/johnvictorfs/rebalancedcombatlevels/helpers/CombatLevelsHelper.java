@@ -21,7 +21,7 @@ public class CombatLevelsHelper {
         setNpcData();
 
         for (OsrsBoxDBMonster monster : monsters) {
-            if (Objects.equals(monster.name, npcName) && monster.combat_level == originalLevel) {
+            if (Objects.equals(monster.name.trim(), npcName.trim()) && monster.combat_level == originalLevel) {
                 // TODO: Json should be a single object with keys being "name_combat_level" to be more efficient
                 int usedStylesCount = 0;
                 int totalLevelsSum = 0;
@@ -71,15 +71,64 @@ public class CombatLevelsHelper {
         }
     }
 
-    private static String coloredFromCombatLevel(int combatLevel, String text, Client client) {
+    public static String coloredFromCombatLevel(int combatLevel, String text, Client client) {
+        String color = null;
+
         try {
             int playerLevel = Objects.requireNonNull(client.getLocalPlayer()).getCombatLevel();
 
+            // https://oldschool.runescape.wiki/w/Combat_level#Colours
             if (combatLevel == playerLevel) {
-                return "#ffff00";
-            } else if (combatLevel )
-        } catch(Exception exception) {
+                color = "#ffff00";
+            } else if (combatLevel >= (playerLevel + 10)) {
+                color = "#ff3000";
+            } else if (combatLevel >= (playerLevel + 9)) {
+                color = "#ff3000";
+            } else if (combatLevel >= (playerLevel + 8)) {
+                color = "#ff3000";
+            } else if (combatLevel >= (playerLevel + 7)) {
+                color = "#ff3000";
+            } else if (combatLevel >= (playerLevel + 6)) {
+                color = "#ff7000";
+            } else if (combatLevel >= (playerLevel + 5)) {
+                color = "#ff7000";
+            } else if (combatLevel >= (playerLevel + 4)) {
+                color = "#ff7000";
+            } else if (combatLevel >= (playerLevel + 3)) {
+                color = "#ffb000";
+            } else if (combatLevel >= (playerLevel + 2)) {
+                color = "#ffb000";
+            } else if (combatLevel >= (playerLevel + 1)) {
+                color = "#ffb000";
+            } else if (combatLevel <= (playerLevel - 10)) {
+                color = "#00ff00";
+            } else if (combatLevel <= (playerLevel - 9)) {
+                color = "#40ff00";
+            } else if (combatLevel <= (playerLevel - 8)) {
+                color = "#40ff00";
+            } else if (combatLevel <= (playerLevel - 7)) {
+                color = "#40ff00";
+            } else if (combatLevel <= (playerLevel - 6)) {
+                color = "#80ff00";
+            } else if (combatLevel <= (playerLevel - 5)) {
+                color = "#80ff00";
+            } else if (combatLevel <= (playerLevel - 4)) {
+                color = "#80ff00";
+            } else if (combatLevel <= (playerLevel - 3)) {
+                color = "#c0ff00";
+            } else if (combatLevel <= (playerLevel - 2)) {
+                color = "#c0ff00";
+            } else if (combatLevel <= (playerLevel - 1)) {
+                color = "#c0ff00";
+            }
+        } catch (Exception exception) {
             return text;
         }
+
+        if (color != null) {
+            return "<col=" + color + ">" + text + "<col=" + color + ">";
+        }
+
+        return text;
     }
 }

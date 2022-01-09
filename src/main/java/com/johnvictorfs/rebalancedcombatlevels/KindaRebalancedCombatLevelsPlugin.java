@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
         name = "Rebalanced combat levels"
 )
 public class KindaRebalancedCombatLevelsPlugin extends Plugin {
-    Pattern NPC_NAME_PATTERN = Pattern.compile("<col=ffff00>(.*)<col=ff00> +\\(level-(\\d+)\\)");
+    Pattern NPC_NAME_PATTERN = Pattern.compile("<col=f+0+>(.*)<col=f+0+> +\\(level-(\\d+)\\)");
 
     @Inject
     private Client client;
@@ -43,6 +43,8 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
 
         Matcher matcher = NPC_NAME_PATTERN.matcher(firstEntry.getTarget());
 
+        System.out.println(firstEntry.getTarget());
+
         if (matcher.matches()) {
             String npcName = matcher.group(1);
             String oldCombatLevel = matcher.group(2);
@@ -59,11 +61,11 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
                     return;
                 }
 
-                String newLevelString = "new-level-" + newCombatLevel;
+                String newLevelString = config.recalculatedCombatLevelText() + newCombatLevel;
 
                 if (config.showRegularCombatLevel()) {
                     // Show both new and old combat levels
-                    entry.setTarget(entry.getTarget() + " (" + newLevelString + ")");
+                    entry.setTarget(entry.getTarget() + CombatLevelsHelper.coloredFromCombatLevel(newCombatLevel, " (" + newLevelString + ")", client));
                 } else {
                     // Show only new combat levels
                     entry.setTarget(entry.getTarget().replaceAll(oldLevelString, newLevelString));
