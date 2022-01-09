@@ -24,4 +24,13 @@ public interface KindaRebalancedCombatLevelsConfig extends Config
 	default String recalculatedCombatLevelText() {
 		return "*level-";
 	}
+
+	@ConfigItem(
+			keyName = "excludeZeroStats",
+			name = "Exclude Level Zero/One Stats",
+			description = "If this is true, the calculation will exclude level 1/0 stats from being included in the calculations and will only make an average out of the non-zero/one stats"
+	)
+	default boolean excludeZeroStats() {
+		return true;
+	}
 }

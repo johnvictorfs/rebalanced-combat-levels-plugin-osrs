@@ -1,6 +1,7 @@
 package com.johnvictorfs.rebalancedcombatlevels.helpers;
 
 import com.google.gson.Gson;
+import com.johnvictorfs.rebalancedcombatlevels.KindaRebalancedCombatLevelsConfig;
 import jdk.nashorn.internal.parser.JSONParser;
 import net.runelite.api.Client;
 
@@ -17,7 +18,7 @@ public class CombatLevelsHelper {
     private final Gson gson = new Gson();
     private static OsrsBoxDBMonster[] monsters = null;
 
-    public static int combatLevelFromNPC(String npcName, int originalLevel) {
+    public static int combatLevelFromNPC(String npcName, int originalLevel, KindaRebalancedCombatLevelsConfig config) {
         setNpcData();
 
         for (OsrsBoxDBMonster monster : monsters) {
@@ -51,11 +52,11 @@ public class CombatLevelsHelper {
                     totalLevelsSum += monster.strength_level;
                 }
 
-                if (usedStylesCount == 0) {
+                 if (usedStylesCount == 0 && config.excludeZeroStats()) {
                     return -1;
-                }
+                 }
 
-                return totalLevelsSum / usedStylesCount;
+                return totalLevelsSum / (config.excludeZeroStats() ? usedStylesCount : 5);
             }
         }
 

@@ -53,7 +53,7 @@ public class KindaRebalancedCombatLevelsPlugin extends Plugin {
             for (MenuEntry entry : entries) {
                 if (!entry.getTarget().contains(oldLevelString)) continue;
 
-                int newCombatLevel = CombatLevelsHelper.combatLevelFromNPC(npcName, Integer.parseInt(oldCombatLevel));
+                int newCombatLevel = CombatLevelsHelper.combatLevelFromNPC(npcName, Integer.parseInt(oldCombatLevel), config);
 
                 if (newCombatLevel == -1) {
                     System.out.println("Could not find combat level for " + npcName + "(" + oldCombatLevel + ")");
